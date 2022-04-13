@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400&display=swap');
+    </style>
+    <title>Tanks!</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="join-button" onclick="createGame()">Create Game</div>
+        <div class="or-text">Or</div>
+        <input id="id-input" class="data-input" placeholder="id"></input>
+        <div class="join-button">Join</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script src="/static/scripts/game.js"></script>
+    <script src="/static/scripts/main.js"></script>
+    <script src="/static/scripts/helper.js"></script>
+</body>
