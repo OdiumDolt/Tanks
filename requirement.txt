@@ -1,0 +1,3 @@
+flask
+jwt
+flask_socketio
