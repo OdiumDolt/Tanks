@@ -8,20 +8,31 @@ speed = 200
 rotate_speed = 10
 mouseX = 0
 mouseY = 0
+
 objects = {
         "p1":{
             "x":0, 
-            "y":0, 
+            "y":0,
+            "right_pressed":false,
+            "left_pressed":false,
+            "up_pressed":false,
+            "down_pressed":false,
             "width":35, 
             "height":35, 
-            "angle":0, 
+            "angle":0,
+            "dead":false,
             "color":"blue"}, 
         "p2":{
             "x":1000 - 50,
             "y":600 - 50,
-            "width":35,
-            "height":35,
-            "angle":0, 
+            "right_pressed":false,
+            "left_pressed":false,
+            "up_pressed":false,
+            "down_pressed":false,
+            "width":35, 
+            "height":35, 
+            "angle":0,
+            "dead":false,   
             "color":"red"}
         }
 
@@ -38,7 +49,6 @@ function init(){
 
     // Start the first frame request
     window.requestAnimationFrame(gameLoop);
-    
 
     function getMousePos(evt) {
         var rect = canvas.getBoundingClientRect();
@@ -48,35 +58,41 @@ function init(){
     
     function keyDownHandler(e) {
         if (e.key == "d") {
-            right_pressed = true
+            objects[you]["right_pressed"] = true
         }
         else if (e.key == "a") {
-            left_pressed = true
+            objects[you]["left_pressed"] = true
         }
         else if (e.key == "s") {
-            down_pressed = true
+            objects[you]["down_pressed"] = true
         }
         else if (e.key == "w") {
-            up_pressed = true
+            objects[you]["up_pressed"] = true
         }
 
     }
     
     function keyUpHandler(e) {
         if (e.key == "d") {
-            right_pressed = false
+            objects[you]["right_pressed"] = false
         }
         else if (e.key == "a") {
-            left_pressed = false
+            objects[you]["left_pressed"] = false
         }
         else if (e.key == "s") {
-            down_pressed = false
+            objects[you]["down_pressed"] = false
         }
         else if (e.key == "w") {
-            up_pressed = false
+            objects[you]["up_pressed"] = false
         }
 
     }
+
+    socket.on("game_update", data => {
+        console.log("GOT UPDATE")
+        objects[opp] = data[opp]
+    })
+
 }
 
 function draw_player(object){
@@ -95,20 +111,20 @@ function draw_player(object){
 }
 
 function player_physics(player){
-    if (right_pressed == true){
+    if (player["right_pressed"] == true){
         if ((player["x"] + (player["width"]) + speed * deltaTime) < canvas.width){
             player["x"] += speed * deltaTime
         }
     }
-    else if (left_pressed == true){
+    else if (player["left_pressed"] == true){
         if ((player["x"] + (player["width"]) + speed * deltaTime) > 0){
             player["x"] -= speed * deltaTime
         }
     } 
-    if (up_pressed == true){
+    if (player["up_pressed"] == true){
         player["y"] -= speed * deltaTime
     }
-    else if (down_pressed == true){
+    else if (player["down_pressed"] == true){
         player["y"] += speed * deltaTime
     }
 
@@ -121,13 +137,23 @@ function gameLoop(timeStamp) {
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     // rotate block to mouse
-    x_distance = mouseX - (objects["p1"]["x"] + objects["p1"]["width"])
-    y_distance = mouseY - (objects["p1"]["y"] + objects["p1"]["height"])
+    x_distance = mouseX - (objects[you]["x"] + objects[you]["width"])
+    y_distance = mouseY - (objects[you]["y"] + objects[you]["height"])
     angle = Math.atan(y_distance/x_distance) * (180/Math.PI)
-    objects["p1"]["angle"] = angle
-    console.log(angle)
-    player_physics(objects["p1"])
-    draw_player(objects["p1"])
-    draw_player(objects["p2"])
+    objects[you]["angle"] = angle
+
+    // handle drawing player, and checking physics
+    player_physics(objects[you])
+    player_physics(objects[opp])
+    draw_player(objects[you])
+    draw_player(objects[opp])
+
+    console.log("SENDING")
+    socket.emit("game_update", {"id":game_id,"i_am":you,"gamestate":objects[you]})
     window.requestAnimationFrame(gameLoop);
 }
+
+function gameUpdate(){
+    socket.emit("game_update", {"id":game_id,"i_am":you,"gamestate":objects[you]})
+}
+
