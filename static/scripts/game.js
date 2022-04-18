@@ -122,10 +122,14 @@ function player_physics(player){
         }
     } 
     if (player["up_pressed"] == true){
-        player["y"] -= speed * deltaTime
+        if ((player["y"]) + (player["height"] + speed * deltaTime) > 0){
+            player["y"] -= speed * deltaTime
+        }
     }
     else if (player["down_pressed"] == true){
-        player["y"] += speed * deltaTime
+        if ((player["y"]) + (player["height"] + speed * deltaTime) < canvas.height){
+            player["y"] += speed * deltaTime
+        }
     }
 
 }
@@ -154,6 +158,6 @@ function gameLoop(timeStamp) {
 }
 
 function gameUpdate(){
-    socket.emit("game_update", {"id":game_id,"i_am":you,"gamestate":objects[you]})
+    socket.volatile.emit("game_update", {"id":game_id,"i_am":you,"gamestate":objects[you]})
 }
 

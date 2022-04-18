@@ -1,0 +1,29 @@
+{
+    "map":{
+        "width":1000,
+        "height":600
+
+    },
+    "p1":{
+        "x":0,
+        "y":0,
+        "right_pressed":false,
+        "left_pressed":false,
+        "up_pressed":false,
+        "down_pressed":false,
+        "angle":0,
+        "ammo":10, 
+        "dead":false
+        },
+    "p2":{
+        "x":950,
+        "y":550,
+        "right_pressed":false,
+        "left_pressed":false,
+        "up_pressed":false,
+        "down_pressed":false,
+        "angle":0,
+        "dead":false
+    },
+    "other":{"bullets":{}}
+}
