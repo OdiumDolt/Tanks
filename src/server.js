@@ -4,11 +4,10 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-// const gameServer = require("./modules/gameServer")
-gamer = require("./modules/helper")
-console.log(gamer.makeid(10))
+const gameServer = require("./modules/gameServer.js")
+helper = require("./modules/helper.js")
+console.log(helper.makeid(10))
 
-console.log(makeid(10))
 servers = {}
 
 app.use("/static/styles", express.static(__dirname + "/static/styles"))
@@ -29,10 +28,20 @@ io.on('connection', (socket) => {
         new_server = new gameServer.gameServer(socket)
         console.log(new_server.gamestate)
         while (true){
-            id = makeid()
+            id = helper.makeid()
+            if (id in servers){
+                'pass'
+            }
+            else{
+                servers[id] = new_server
+                break
+            }
         }
 
+        servers[id].p1 = p1_id
+        socket.join(id)
     })
+    
 });
 
 

@@ -9,3 +9,7 @@ class gameServer {
     }
 
 }
+
+module.exports = {
+    gameServer
+}
