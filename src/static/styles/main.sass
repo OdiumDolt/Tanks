@@ -1,0 +1,70 @@
+$back-color: #323437
+$dark-main: #202122
+$light-main: #D1D0C5
+$darker: #1a1a1a
+$yellow-main: #e2b714
+$main-font: 'Lexend Deca', sans-serif
+// @use 'main' as *
+
+body
+    background-color: $back-color
+
+.main-container
+    position: absolute
+    left: 50%
+    top: 50%
+    min-width: 200px
+    width: fit-content
+    min-height: 100px
+    height: fit-content
+    padding: 10px
+    transform: translate(-50%, -50%)
+    background-color: $dark-main
+    border-radius: 10px
+
+
+.data-input    
+    border-radius: 10px
+    position: relative
+    left: 50%
+    transform: translate(-50%, 0%)
+    outline: 0px solid transparent
+    border-width:0px
+    border:none
+    padding: 10px
+    background-color: $back-color
+    color: $light-main
+    font-family: $main-font
+
+.join-button
+    display: flex
+    align-items: center
+    justify-content: center
+    user-select: none
+    border-radius: 10px
+    margin-top: 20px
+    position: relative
+    width: 80%
+    height: 40px
+    background-color: $darker
+    color: $light-main
+    font-family: $main-font
+    font-size: 20px
+    left: 50%
+    transition: all 0.3s
+    transform: translate(-50%, 0%)
+
+
+.join-button:hover
+    background-color: $yellow-main
+    color: $darker
+
+.or-text
+    color: $light-main
+    font-family: $main-font
+    size: 20px
+    position: relative
+    left: 45%
+    margin-top: 20px
+    margin-bottom: 20px
+    user-select: none
