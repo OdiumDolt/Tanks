@@ -46,7 +46,7 @@ function init(){
     document.addEventListener("keyup", keyUpHandler, false);
     document.addEventListener("mousemove",  getMousePos, false);
 
-
+    setInterval(gameUpdate, 15)
     // Start the first frame request
     window.requestAnimationFrame(gameLoop);
 
@@ -89,8 +89,7 @@ function init(){
     }
 
     socket.on("game_update", data => {
-        console.log("GOT UPDATE")
-        objects[opp] = data[opp]
+        objects[opp] = data
     })
 
 }
@@ -152,12 +151,10 @@ function gameLoop(timeStamp) {
     draw_player(objects[you])
     draw_player(objects[opp])
 
-    console.log("SENDING")
-    socket.emit("game_update", {"id":game_id,"i_am":you,"gamestate":objects[you]})
     window.requestAnimationFrame(gameLoop);
 }
 
 function gameUpdate(){
-    socket.volatile.emit("game_update", {"id":game_id,"i_am":you,"gamestate":objects[you]})
+    socket.volatile.emit("game_update", {"id":game_id,"i_am":you,"gamestate":objects[you], "my_id":my_id})
 }
 

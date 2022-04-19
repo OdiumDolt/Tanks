@@ -44,7 +44,7 @@ def joinGame(data):
         if servers[id].p2 == None:
             servers[id].p2 = p2_id
             join_room(servers[id].id)
-            emit("game_id", {"id":id, "you":"p2", "opp":"p1"})
+            emit("game_id", {"id":id, "you":"p2", "opp":"p1"}, to=p2_id)
         else:
             pass
     except KeyError:
