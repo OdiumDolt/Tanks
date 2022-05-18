@@ -8,40 +8,99 @@ speed = 200
 rotate_speed = 10
 mouseX = 0
 mouseY = 0
-
-objects = {
+players = {
         "p1":{
+            "who":"p1",
             "x":0, 
             "y":0,
             "right_pressed":false,
             "left_pressed":false,
             "up_pressed":false,
             "down_pressed":false,
-            "width":35, 
-            "height":35, 
+            "width":30, 
+            "height":30, 
             "angle":0,
             "dead":false,
             "color":"blue"}, 
         "p2":{
+            "who":"p2",
             "x":1000 - 50,
             "y":600 - 50,
             "right_pressed":false,
             "left_pressed":false,
             "up_pressed":false,
             "down_pressed":false,
-            "width":35, 
-            "height":35, 
+            "width":30, 
+            "height":30, 
             "angle":0,
             "dead":false,   
             "color":"red"}
+        
         }
+
+objects = {
+    "mutes":[
+        
+    ],
+
+    "nmutes":[
+        {   
+            "type":"wall",
+            "position":{"x":100, "y":100, "width":30, "height":30},
+            "lines":{
+                "top":[{"x0":0, "y0":0, "x1":30, "y1":0}, {"x0":25, "y0":30, "x1":65, "y1":30}, {"x0":60, "y0":0, "x1":90, "y1":0}],
+                "right":[{"x0":30, "y0":0, "x1":30, "y1":35}, {"x0":90, "y0":0, "x1":90, "y1":90}],
+                "bottom":[{"x0":90, "y0":90, "x1":0, "y1":90}],
+                "left":[{"x0":60, "y0":65, "x1":60, "y1":-5}, {"x0":0, "y0":90, "x1":0, "y1":0}]
+            },
+            "drawPath":[{"x":30, "y":0}, {"x":30, "y":30}, {"x":60, "y":30},
+            {"x":60, "y":0}, {"x":90, "y":0}, {"x":90, "y":90},
+            {"x":0, "y":90}, {"x":0, "y":0}
+                ],
+            "color":"grey"
+        },
+        {   
+            "type":"wall",
+            "position":{"x":700, "y":200, "width":30, "height":30},
+            "lines":{
+                "top":[{"x0":0, "y0":0, "x1":30, "y1":0}, {"x0":25, "y0":30, "x1":65, "y1":30}, {"x0":60, "y0":0, "x1":90, "y1":0}],
+                "right":[{"x0":30, "y0":0, "x1":30, "y1":35}, {"x0":90, "y0":0, "x1":90, "y1":90}],
+                "bottom":[{"x0":90, "y0":90, "x1":0, "y1":90}],
+                "left":[{"x0":60, "y0":65, "x1":60, "y1":-5}, {"x0":0, "y0":90, "x1":0, "y1":0}]
+            },
+            "drawPath":[{"x":30, "y":0}, {"x":30, "y":30}, {"x":60, "y":30},
+            {"x":60, "y":0}, {"x":90, "y":0}, {"x":90, "y":90},
+            {"x":0, "y":90}, {"x":0, "y":0}
+                ],
+            "color":"grey"
+        },
+        {   
+            "type":"wall",
+            "position":{"x":500, "y":100    , "width":30, "height":30},
+            "lines":{
+                "top":[{"x0":0, "y0":0, "x1":30, "y1":0}, {"x0":25, "y0":30, "x1":65, "y1":30}, {"x0":60, "y0":0, "x1":90, "y1":0}],
+                "right":[{"x0":30, "y0":0, "x1":30, "y1":35}, {"x0":90, "y0":0, "x1":90, "y1":90}],
+                "bottom":[{"x0":90, "y0":90, "x1":0, "y1":90}],
+                "left":[{"x0":60, "y0":65, "x1":60, "y1":0}, {"x0":0, "y0":90, "x1":0, "y1":0}]
+            },
+            "drawPath":[{"x":30, "y":0}, {"x":30, "y":30}, {"x":60, "y":30},
+            {"x":60, "y":0}, {"x":90, "y":0}, {"x":90, "y":90},
+            {"x":0, "y":90}, {"x":0, "y":0}
+                ],
+            "color":"grey"
+        }
+
+    ]
+
+}
 
 function init(){
     canvas = document.getElementById('game-canvas');
     canvas.width = 1000
     canvas.height = 600
-    context = canvas.getContext('2d');
+    ctx = canvas.getContext('2d');
     
+
     document.addEventListener("keydown", keyDownHandler, false)
     document.addEventListener("keyup", keyUpHandler, false);
     document.addEventListener("mousemove",  getMousePos, false);
@@ -58,58 +117,58 @@ function init(){
     
     function keyDownHandler(e) {
         if (e.key == "d") {
-            objects[you]["right_pressed"] = true
+            players[you]["right_pressed"] = true
         }
         else if (e.key == "a") {
-            objects[you]["left_pressed"] = true
+            players[you]["left_pressed"] = true
         }
         else if (e.key == "s") {
-            objects[you]["down_pressed"] = true
+            players[you]["down_pressed"] = true
         }
         else if (e.key == "w") {
-            objects[you]["up_pressed"] = true
+            players[you]["up_pressed"] = true
         }
 
     }
     
     function keyUpHandler(e) {
         if (e.key == "d") {
-            objects[you]["right_pressed"] = false
+            players[you]["right_pressed"] = false
         }
         else if (e.key == "a") {
-            objects[you]["left_pressed"] = false
+            players[you]["left_pressed"] = false
         }
         else if (e.key == "s") {
-            objects[you]["down_pressed"] = false
+            players[you]["down_pressed"] = false
         }
         else if (e.key == "w") {
-            objects[you]["up_pressed"] = false
+            players[you]["up_pressed"] = false
         }
 
     }
 
     socket.on("game_update", data => {
-        objects[opp] = data
+        players[opp] = data
     })
 
 }
 
 function draw_player(object){
-    context.fillStyle = object["color"]
+    ctx.fillStyle = object["color"]
 
     if (object["angle"] == 0){
-        context.fillRect(object["x"], object["y"], object["width"], object["height"])
+        ctx.fillRect(object["x"], object["y"], object["width"], object["height"])
     }
     else{
-        context.save()
-        context.translate(object["x"] + object["width"], object["y"] + object["height"])
-        context.rotate(object["angle"] * Math.PI / 180)
-        context.fillRect(object["width"] / -2, object["height"] / -2, object["width"], object["height"])
-        context.restore()
+        ctx.save()
+        ctx.translate(object["x"] + object["width"], object["y"] + object["height"])
+        ctx.rotate(object["angle"] * Math.PI / 180)
+        ctx.fillRect(object["width"] / -2, object["height"] / -2, object["width"], object["height"])
+        ctx.restore()
     }
 }
 
-function player_physics(player){
+function player_movement(player){
     if (player["right_pressed"] == true){
         if ((player["x"] + (player["width"]) + speed * deltaTime) < canvas.width){
             player["x"] += speed * deltaTime
@@ -130,6 +189,53 @@ function player_physics(player){
             player["y"] += speed * deltaTime
         }
     }
+}
+
+
+function draw_objects(){
+    for(i = 0; i < objects["nmutes"].length; i++){
+        object = objects["nmutes"][i]
+        ctx.fillStyle = object["color"]
+        ctx.beginPath()
+        ctx.moveTo(object["position"]["x"], object["position"]["y"])
+        for (draw_it = 0; draw_it < object["drawPath"].length; draw_it++){
+            ctx.lineTo(object["position"]["x"] + object["drawPath"][draw_it]["x"], object["position"]["y"] + object["drawPath"][draw_it]["y"])
+        }
+        ctx.fill()
+    }
+}
+
+
+function physics(){
+    for ([key, value] of Object.entries(players)){
+        x = players[key]["x"] + 27
+        y = players[key]["y"] + 27
+        for (i of objects["nmutes"]){
+            for (line of i["lines"]["top"]){ 
+                if (x <= line["x1"] + i["position"]["x"] && x >= line["x0"] + i["position"]["x"] && line["y0"] + i["position"]["y"] <= y && y <= line["y0"] + i["position"]["y"] + 5){
+                    players[key]["y"] = (line["y0"] + i["position"]["y"]) - 28
+                }
+            }
+            for (line of i["lines"]["right"]){ 
+                if (y >= line["y0"] + i["position"]["y"] && y <= line["y1"] + i["position"]["y"] && line["x0"] + i["position"]["x"] >= x && x >= line["x0"] + i["position"]["x"] - 5){
+                    players[key]["x"] = (line["x0"] + i["position"]["x"]) - 26
+                }
+            }
+            for (line of i["lines"]["bottom"]){
+                if (x <= line["x0"] + i["position"]["x"] && x >= line["x1"] + i["position"]['x'] && line["y0"] + i["position"]["y"] >= y && y >= line["y0"] + i["position"]["y"] - 5){
+                    players[key]["y"] = (line["y0"] + i["position"]["y"]) - 28
+                }
+            }
+
+            for (line of i["lines"]["left"]){
+                if (y <= line["y0"] + i["position"]["y"] && y >= line["y1"] + i["position"]['y'] && line["x0"] + i["position"]["x"] <= x && x <= line["x0"] + i["position"]["x"] + 5){
+                    players[key]["x"] = (line["x0"] + i["position"]["x"]) - 28
+                }
+            }
+
+        }
+
+    }
 
 }
 
@@ -137,24 +243,26 @@ function gameLoop(timeStamp) {
     deltaTime = (timeStamp - oldTimeStamp) / 1000;
     if (!deltaTime) deltaTime = 0;
     oldTimeStamp = timeStamp;
-    context.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     // rotate block to mouse
-    x_distance = mouseX - (objects[you]["x"] + objects[you]["width"])
-    y_distance = mouseY - (objects[you]["y"] + objects[you]["height"])
+    x_distance = mouseX - (players[you]["x"] + players[you]["width"])
+    y_distance = mouseY - (players[you]["y"] + players[you]["height"])
     angle = Math.atan(y_distance/x_distance) * (180/Math.PI)
-    objects[you]["angle"] = angle
+    players[you]["angle"] = angle
 
     // handle drawing player, and checking physics
-    player_physics(objects[you])
-    player_physics(objects[opp])
-    draw_player(objects[you])
-    draw_player(objects[opp])
+    player_movement(players[you])
+    player_movement(players[opp])
+    physics()
+    draw_objects()
+    draw_player(players[you])
+    draw_player(players[opp])
 
     window.requestAnimationFrame(gameLoop);
 }
 
 function gameUpdate(){
-    socket.volatile.emit("game_update", {"id":game_id,"i_am":you,"gamestate":objects[you], "my_id":my_id})
+    socket.volatile.emit("game_update", {"id":game_id,"i_am":you,"gamestate":players[you], "my_id":my_id})
 }
 

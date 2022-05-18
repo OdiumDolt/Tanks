@@ -8,6 +8,12 @@ const gameServer = require("./modules/gameServer.js")
 helper = require("./modules/helper.js")
 servers = {}
 
+
+function restart(){
+    servers = {}
+}
+
+
 app.use("/static/styles", express.static(__dirname + "/static/styles"))
 app.use("/static/scripts", express.static(__dirname + "/static/scripts"))
 
@@ -55,23 +61,30 @@ io.on('connection', (socket) => {
     })
 
     socket.on("game_update", (data) => {
+        update_things = true
         player = data["my_id"]
         game_id = data["id"]
         player_num = data["i_am"]
         gamestate = data["gamestate"]
+        try{
         servers[game_id]["gamestate"][player_num] = gamestate
-
-        if (player_num == "p1"){
-            io.volatile.to(servers[game_id].p2).emit("game_update", gamestate)
         }
-        else{
-            io.volatile.to(servers[game_id].p1).emit("game_update", gamestate)
+        catch{
+            update_things = false  
+        }
+        if(update_things){
+            if (player_num == "p1"){
+                io.volatile.to(servers[game_id].p2).emit("game_update", gamestate)
+            }
+            else{
+                io.volatile.to(servers[game_id].p1).emit("game_update", gamestate)
+            }
         }
 
     })
 
     socket.on("disconnect", function() {
-        console.log(socket)
+        console.log("disconnected")
     })
 
 });
@@ -80,6 +93,6 @@ io.on('connection', (socket) => {
 
 
 
-server.listen(3000, () => {
-  console.log('listening on *:3000');
+server.listen(5000, () => {
+  console.log('listening on *:5000');
 });
