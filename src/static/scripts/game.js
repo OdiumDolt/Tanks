@@ -40,7 +40,6 @@ players = {
 
 objects = {
     "mutes":[
-        
     ],
 
     "nmutes":[
@@ -104,6 +103,7 @@ function init(){
     document.addEventListener("keydown", keyDownHandler, false)
     document.addEventListener("keyup", keyUpHandler, false);
     document.addEventListener("mousemove",  getMousePos, false);
+    document.addEventListener("click", function(e){console.log(e)});
 
     setInterval(gameUpdate, 15)
     // Start the first frame request
@@ -128,7 +128,7 @@ function init(){
         else if (e.key == "w") {
             players[you]["up_pressed"] = true
         }
-
+        console.log(e.key)
     }
     
     function keyUpHandler(e) {
