@@ -1,113 +1,33 @@
-let secondsPassed;
 let oldTimeStamp;
-let right_pressed
-let left_pressed
-let down_pressed
-let up_pressed
 speed = 200
-rotate_speed = 10
 mouseX = 0
 mouseY = 0
-players = {
-        "p1":{
-            "who":"p1",
-            "x":0, 
-            "y":0,
-            "right_pressed":false,
-            "left_pressed":false,
-            "up_pressed":false,
-            "down_pressed":false,
-            "width":30, 
-            "height":30, 
-            "angle":0,
-            "dead":false,
-            "color":"blue"}, 
-        "p2":{
-            "who":"p2",
-            "x":1000 - 50,
-            "y":600 - 50,
-            "right_pressed":false,
-            "left_pressed":false,
-            "up_pressed":false,
-            "down_pressed":false,
-            "width":30, 
-            "height":30, 
-            "angle":0,
-            "dead":false,   
-            "color":"red"}
-        
-        }
+spawn_locations = [{"x":65, "y":267},{"x":64, "y":50},{"x":59, "y":460},{"x":890, "y":465},{"x":895,"y":225},{"x":882,"y":40}]
 
-objects = {
-    "mutes":[
-        
-    ],
-
-    "nmutes":[
-        {   
-            "type":"wall",
-            "position":{"x":100, "y":100, "width":30, "height":30},
-            "lines":{
-                "top":[{"x0":0, "y0":0, "x1":30, "y1":0}, {"x0":25, "y0":30, "x1":65, "y1":30}, {"x0":60, "y0":0, "x1":90, "y1":0}],
-                "right":[{"x0":30, "y0":0, "x1":30, "y1":35}, {"x0":90, "y0":0, "x1":90, "y1":90}],
-                "bottom":[{"x0":90, "y0":90, "x1":0, "y1":90}],
-                "left":[{"x0":60, "y0":65, "x1":60, "y1":-5}, {"x0":0, "y0":90, "x1":0, "y1":0}]
-            },
-            "drawPath":[{"x":30, "y":0}, {"x":30, "y":30}, {"x":60, "y":30},
-            {"x":60, "y":0}, {"x":90, "y":0}, {"x":90, "y":90},
-            {"x":0, "y":90}, {"x":0, "y":0}
-                ],
-            "color":"grey"
-        },
-        {   
-            "type":"wall",
-            "position":{"x":700, "y":200, "width":30, "height":30},
-            "lines":{
-                "top":[{"x0":0, "y0":0, "x1":30, "y1":0}, {"x0":25, "y0":30, "x1":65, "y1":30}, {"x0":60, "y0":0, "x1":90, "y1":0}],
-                "right":[{"x0":30, "y0":0, "x1":30, "y1":35}, {"x0":90, "y0":0, "x1":90, "y1":90}],
-                "bottom":[{"x0":90, "y0":90, "x1":0, "y1":90}],
-                "left":[{"x0":60, "y0":65, "x1":60, "y1":-5}, {"x0":0, "y0":90, "x1":0, "y1":0}]
-            },
-            "drawPath":[{"x":30, "y":0}, {"x":30, "y":30}, {"x":60, "y":30},
-            {"x":60, "y":0}, {"x":90, "y":0}, {"x":90, "y":90},
-            {"x":0, "y":90}, {"x":0, "y":0}
-                ],
-            "color":"grey"
-        },
-        {   
-            "type":"wall",
-            "position":{"x":500, "y":100    , "width":30, "height":30},
-            "lines":{
-                "top":[{"x0":0, "y0":0, "x1":30, "y1":0}, {"x0":25, "y0":30, "x1":65, "y1":30}, {"x0":60, "y0":0, "x1":90, "y1":0}],
-                "right":[{"x0":30, "y0":0, "x1":30, "y1":35}, {"x0":90, "y0":0, "x1":90, "y1":90}],
-                "bottom":[{"x0":90, "y0":90, "x1":0, "y1":90}],
-                "left":[{"x0":60, "y0":65, "x1":60, "y1":0}, {"x0":0, "y0":90, "x1":0, "y1":0}]
-            },
-            "drawPath":[{"x":30, "y":0}, {"x":30, "y":30}, {"x":60, "y":30},
-            {"x":60, "y":0}, {"x":90, "y":0}, {"x":90, "y":90},
-            {"x":0, "y":90}, {"x":0, "y":0}
-                ],
-            "color":"grey"
-        }
-
-    ]
-
-}
 
 function init(){
     canvas = document.getElementById('game-canvas');
     canvas.width = 1000
     canvas.height = 600
     ctx = canvas.getContext('2d');
-    
 
     document.addEventListener("keydown", keyDownHandler, false)
     document.addEventListener("keyup", keyUpHandler, false);
-    document.addEventListener("mousemove",  getMousePos, false);
+    document.addEventListener("mousemove", getMousePos, false);
+    document.addEventListener("mousedown", leftClickDown, false);
+    document.addEventListener("mouseup", leftClickUp, false)
 
-    setInterval(gameUpdate, 15)
+    setInterval(gameUpdate, 10)
+
     // Start the first frame request
     window.requestAnimationFrame(gameLoop);
+
+    function leftClickDown(){
+        players[you]["left_clicked"] = true
+    }
+    function leftClickUp(){
+        players[you]["left_clicked"] = false
+    }
 
     function getMousePos(evt) {
         var rect = canvas.getBoundingClientRect();
@@ -134,135 +54,132 @@ function init(){
     function keyUpHandler(e) {
         if (e.key == "d") {
             players[you]["right_pressed"] = false
+            players[you]["velocity"]["x"] = 0
         }
         else if (e.key == "a") {
             players[you]["left_pressed"] = false
+            players[you]["velocity"]["x"] = 0
         }
         else if (e.key == "s") {
             players[you]["down_pressed"] = false
+            players[you]["velocity"]["y"] = 0
         }
         else if (e.key == "w") {
             players[you]["up_pressed"] = false
+            players[you]["velocity"]["y"] = 0
         }
 
     }
 
     socket.on("game_update", data => {
-        players[opp] = data
+        players[opp] = data["gamestate"]
+        objects["mutes"][opp] = data["objects"]
+        
     })
 
-}
+    socket.on("your_dead", data =>{
+        spawn = spawn_locations[Math.floor(Math.random()*spawn_locations.length)]
+        players[you]["x"] = spawn["x"]
+        players[you]["y"] = spawn["y"]
+        players[you]["dead"] = false
 
-function draw_player(object){
-    ctx.fillStyle = object["color"]
-
-    if (object["angle"] == 0){
-        ctx.fillRect(object["x"], object["y"], object["width"], object["height"])
-    }
-    else{
-        ctx.save()
-        ctx.translate(object["x"] + object["width"], object["y"] + object["height"])
-        ctx.rotate(object["angle"] * Math.PI / 180)
-        ctx.fillRect(object["width"] / -2, object["height"] / -2, object["width"], object["height"])
-        ctx.restore()
-    }
+    })
 }
 
 function player_movement(player){
     if (player["right_pressed"] == true){
-        if ((player["x"] + (player["width"]) + speed * deltaTime) < canvas.width){
-            player["x"] += speed * deltaTime
-        }
+        player["velocity"]["x"] = player["speed"] * deltaTime
     }
     else if (player["left_pressed"] == true){
-        if ((player["x"] + (player["width"]) + speed * deltaTime) > 0){
-            player["x"] -= speed * deltaTime
-        }
+        player["velocity"]["x"] = (player["speed"] * deltaTime) * -1
     } 
     if (player["up_pressed"] == true){
-        if ((player["y"]) + (player["height"] + speed * deltaTime) > 0){
-            player["y"] -= speed * deltaTime
-        }
+        player["velocity"]["y"] = (player["speed"] * deltaTime) * -1
     }
     else if (player["down_pressed"] == true){
-        if ((player["y"]) + (player["height"] + speed * deltaTime) < canvas.height){
-            player["y"] += speed * deltaTime
+        player["velocity"]["y"] = (player["speed"] * deltaTime)
+    }
+    if (player["who"] == you){
+        if (player["left_clicked"]){
+            if (player["cshoot_cooldown"] <= 0){
+                objects["mutes"][you].push({
+                    "shape":"circle",
+                    "type":"bullet",
+                    "color":players[you]["color"],
+                    "timer":0,
+                    "time":3,
+                    "velocity":{
+                        "x":(Math.cos(player["angle"] * Math.PI/180) * player["bullet_speed"]),
+                        "y":(Math.sin(player["angle"] * Math.PI/180) * player["bullet_speed"]),
+                    },
+                    "radius":15,
+                    "x":player["x"] + player["width"],
+                    "y": player["y"] + player["height"]
+                })
+                player["cshoot_cooldown"] += player["shoot_cooldown"]
+            }
+
         }
     }
 }
 
-
-function draw_objects(){
-    for(i = 0; i < objects["nmutes"].length; i++){
-        object = objects["nmutes"][i]
-        ctx.fillStyle = object["color"]
-        ctx.beginPath()
-        ctx.moveTo(object["position"]["x"], object["position"]["y"])
-        for (draw_it = 0; draw_it < object["drawPath"].length; draw_it++){
-            ctx.lineTo(object["position"]["x"] + object["drawPath"][draw_it]["x"], object["position"]["y"] + object["drawPath"][draw_it]["y"])
-        }
-        ctx.fill()
+function handleCooldowns(player){
+    if (player["cshoot_cooldown"] > 0){
+        player["cshoot_cooldown"] -= deltaTime
     }
-}
-
-
-function physics(){
-    for ([key, value] of Object.entries(players)){
-        x = players[key]["x"] + 27
-        y = players[key]["y"] + 27
-        for (i of objects["nmutes"]){
-            for (line of i["lines"]["top"]){ 
-                if (x <= line["x1"] + i["position"]["x"] && x >= line["x0"] + i["position"]["x"] && line["y0"] + i["position"]["y"] <= y && y <= line["y0"] + i["position"]["y"] + 5){
-                    players[key]["y"] = (line["y0"] + i["position"]["y"]) - 28
-                }
-            }
-            for (line of i["lines"]["right"]){ 
-                if (y >= line["y0"] + i["position"]["y"] && y <= line["y1"] + i["position"]["y"] && line["x0"] + i["position"]["x"] >= x && x >= line["x0"] + i["position"]["x"] - 5){
-                    players[key]["x"] = (line["x0"] + i["position"]["x"]) - 26
-                }
-            }
-            for (line of i["lines"]["bottom"]){
-                if (x <= line["x0"] + i["position"]["x"] && x >= line["x1"] + i["position"]['x'] && line["y0"] + i["position"]["y"] >= y && y >= line["y0"] + i["position"]["y"] - 5){
-                    players[key]["y"] = (line["y0"] + i["position"]["y"]) - 28
-                }
-            }
-
-            for (line of i["lines"]["left"]){
-                if (y <= line["y0"] + i["position"]["y"] && y >= line["y1"] + i["position"]['y'] && line["x0"] + i["position"]["x"] <= x && x <= line["x0"] + i["position"]["x"] + 5){
-                    players[key]["x"] = (line["x0"] + i["position"]["x"]) - 28
-                }
-            }
-
-        }
-
-    }
-
 }
 
 function gameLoop(timeStamp) {
+    // calculate deltaTime for use in physics based calculations
     deltaTime = (timeStamp - oldTimeStamp) / 1000;
     if (!deltaTime) deltaTime = 0;
     oldTimeStamp = timeStamp;
+    
+    // clear canvas for next frame
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    // rotate block to mouse
+    // find the x distance between the x position and the mouse x position. Same with Y
+    // Do this is order to use tan(x) = y_distance/x_distance
     x_distance = mouseX - (players[you]["x"] + players[you]["width"])
     y_distance = mouseY - (players[you]["y"] + players[you]["height"])
-    angle = Math.atan(y_distance/x_distance) * (180/Math.PI)
+    angle = (Math.atan2(y_distance, x_distance) * 180/Math.PI)
     players[you]["angle"] = angle
 
-    // handle drawing player, and checking physics
+    // handle player cooldowns
+    handleCooldowns(players[you])
+    
+    // handle player movement
     player_movement(players[you])
     player_movement(players[opp])
+
+    // handle physics for all objects in scene
     physics()
+
+    // draw all objects
     draw_objects()
+
+    // draw all players
     draw_player(players[you])
     draw_player(players[opp])
-
+    // request new animation frame
+    if (players[you]["dead"] == true){
+        spawn = spawn_locations[Math.floor(Math.random()*spawn_locations.length)]
+        players[you]["x"] = spawn["x"]
+        players[you]["y"] = spawn["y"]
+        players[you]["dead"] = false
+    }
     window.requestAnimationFrame(gameLoop);
+    
 }
 
 function gameUpdate(){
-    socket.volatile.emit("game_update", {"id":game_id,"i_am":you,"gamestate":players[you], "my_id":my_id})
+    // emit the current gamestate
+    if(you == "p1"){
+        socket.volatile.emit("game_update", {"id":game_id,"i_am":you,"gamestate":players[you], "my_id":my_id, "objects":objects["mutes"][you], "p1":players[you]["dead"], "p2":players[opp]["dead"]})
+    }
+    if(you == "p2"){
+        socket.volatile.emit("game_update", {"id":game_id,"i_am":you,"gamestate":players[you], "my_id":my_id, "objects":objects["mutes"][you], "p2":players[you]["dead"], "p1":players[opp]["dead"]})
+    }
+
 }
 

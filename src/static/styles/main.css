@@ -63,4 +63,63 @@ body {
   user-select: none;
 }
 
+.player-joined {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  border-radius: 10px;
+  margin-top: 20px;
+  position: relative;
+  width: 80%;
+  height: 40px;
+  background-color: #e2b714;
+  color: #1a1a1a;
+  font-family: "Lexend Deca", sans-serif;
+  font-size: 20px;
+  left: 50%;
+  transition: all 0.3s;
+  transform: translate(-50%, 0%);
+}
+
+.player-not-joined {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  border-radius: 10px;
+  margin-top: 20px;
+  position: relative;
+  width: 80%;
+  height: 40px;
+  background-color: #1a1a1a;
+  color: #D1D0C5;
+  font-family: "Lexend Deca", sans-serif;
+  font-size: 20px;
+  left: 50%;
+  transition: all 0.3s;
+  transform: translate(-50%, 0%);
+}
+
+.select-dropdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  border-radius: 10px;
+  margin-top: 20px;
+  position: relative;
+  width: 80%;
+  border: none;
+  outline: none;
+  height: 40px;
+  background-color: #1a1a1a;
+  color: #D1D0C5;
+  font-family: "Lexend Deca", sans-serif;
+  font-size: 20px;
+  left: 50%;
+  transition: all 0.3s;
+  transform: translate(-50%, 0%);
+}
+
 /*# sourceMappingURL=main.css.map */

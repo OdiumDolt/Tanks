@@ -8,12 +8,6 @@ const gameServer = require("./modules/gameServer.js")
 helper = require("./modules/helper.js")
 servers = {}
 
-
-function restart(){
-    servers = {}
-}
-
-
 app.use("/static/styles", express.static(__dirname + "/static/styles"))
 app.use("/static/scripts", express.static(__dirname + "/static/scripts"))
 
@@ -29,10 +23,10 @@ io.on('connection', (socket) => {
     })
 
     socket.on("create_game", (p1_id) => {
-        console.log(p1_id)
         new_server = new gameServer.gameServer(socket)
         while (true){
             id = helper.makeid(10)
+            console.log(id)
             if (id in servers){
                 'pass'
             }
@@ -55,32 +49,46 @@ io.on('connection', (socket) => {
                 servers[game_id].p2 = player_id
                 socket.join(game_id)
                 io.to(player_id).emit("game_id", {"id":game_id, "you":"p2", "opp":"p1"})
+                io.to(servers[game_id].p1).emit("player_joined", "p2")
             }  
         }
 
     })
 
+
+    socket.on("start_game", (data) => {
+        io.to(servers[data["game_id"]].p2).emit("game_start", {"game_mode":data["game_mode"]})
+    })
+
     socket.on("game_update", (data) => {
-        update_things = true
-        player = data["my_id"]
-        game_id = data["id"]
-        player_num = data["i_am"]
-        gamestate = data["gamestate"]
         try{
-        servers[game_id]["gamestate"][player_num] = gamestate
+            update_things = true
+            player = data["my_id"]
+            game_id = data["id"]
+            player_num = data["i_am"]
+            gamestate = data["gamestate"]
+            if(update_things){
+                if (player_num == "p1"){
+                    io.volatile.to(servers[game_id].p2).emit("game_update", {"gamestate":gamestate, "objects":data["objects"], "p1":data["p1"], "p2":data["p2"]})
+                }
+                else{
+                    io.volatile.to(servers[game_id].p1).emit("game_update", {"gamestate":gamestate, "objects":data["objects"], "p1":data["p1"], "p2":data["p2"]})
+                }
+            }
         }
         catch{
-            update_things = false  
+            
         }
-        if(update_things){
-            if (player_num == "p1"){
-                io.volatile.to(servers[game_id].p2).emit("game_update", gamestate)
-            }
-            else{
-                io.volatile.to(servers[game_id].p1).emit("game_update", gamestate)
-            }
+    })
+    socket.on("opp_dead", data => {
+        game_id = data["game_id"]
+        who = data["im"]
+        if (who == "p1"){
+            io.to(servers[game_id].p2).emit("your_dead", "cool")
         }
-
+        else if (who == "p2"){
+            io.to(servers[game_id].p1).emit("your_dead", "cool")
+        }
     })
 
     socket.on("disconnect", function() {
